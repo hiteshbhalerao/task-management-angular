@@ -1,0 +1,15 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/tasks" aria-label="Taskflow home"><span class="brand-mark">t</span><span>taskflow<span class="brand-dot">.</span></span></a>
+    <div class="workspace-label">WORKSPACE</div>
+    <a class="nav-link active" routerLink="/tasks"><span class="nav-icon">▦</span> My tasks</a>
+    <div class="sidebar-bottom"><div class="avatar">HB</div><div><strong>Hitesh Bhalerao</strong><small>Personal workspace</small></div><span class="more">···</span></div>
+  </aside>
+  <main class="main-area">
+    <header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <strong>My tasks</strong></div><div class="top-actions"><span class="today-label">{{ todayLabel }}</span><div class="top-avatar">HB</div></div></header>
+    @if (store.notice(); as notice) { <div class="toast success" role="status"><span>✓</span>{{ notice }}<button aria-label="Dismiss" (click)="store.dismissFeedback()">×</button></div> }
+    @if (store.error(); as error) { <div class="toast error" role="alert"><span>!</span>{{ error }}<button aria-label="Dismiss" (click)="store.dismissFeedback()">×</button></div> }
+    <router-outlet />
+    <footer class="footer">© 2026 Taskflow <span>Made for focused work</span></footer>
+  </main>
+</div>

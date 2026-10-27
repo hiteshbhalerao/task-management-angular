@@ -1,0 +1,25 @@
+<section class="page-heading"><div><div class="eyebrow">OVERVIEW</div><h1>My tasks <span class="heading-count">{{ store.total() }}</span></h1><p class="subtitle">Keep your work moving forward.</p></div><a class="button primary" routerLink="/tasks/new"><span>＋</span> New task</a></section>
+<section class="stats-grid" aria-label="Task summary">
+  <article class="stat-card"><div class="stat-top"><span class="stat-icon lavender">▦</span><span class="stat-label">Total tasks</span></div><strong>{{ store.total() }}</strong><small>Across all statuses</small></article>
+  <article class="stat-card"><div class="stat-top"><span class="stat-icon green">✓</span><span class="stat-label">Completed</span></div><strong>{{ store.completed() }}</strong><small>Nicely done</small></article>
+  <article class="stat-card"><div class="stat-top"><span class="stat-icon blue">◷</span><span class="stat-label">In progress</span></div><strong>{{ store.inProgress() }}</strong><small>Work in motion</small></article>
+  <article class="stat-card"><div class="stat-top"><span class="stat-icon rose">!</span><span class="stat-label">Overdue</span></div><strong>{{ store.overdue() }}</strong><small>Needs your attention</small></article>
+</section>
+<section class="task-panel">
+  <div class="panel-heading"><div><h2>All tasks</h2><p>Manage and keep track of your work</p></div><label class="search-box"><span>⌕</span><input aria-label="Search tasks" placeholder="Search tasks..." [value]="query()" (input)="query.set($any($event.target).value)" /></label></div>
+  <div class="filters"><label class="filter-label">Status <select aria-label="Filter by status" [value]="status()" (change)="status.set($any($event.target).value)"><option value="all">All statuses</option><option value="todo">To do</option><option value="in-progress">In progress</option><option value="completed">Completed</option></select></label><label class="filter-label">Priority <select aria-label="Filter by priority" [value]="priority()" (change)="priority.set($any($event.target).value)"><option value="all">All priorities</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label><span class="result-count">{{ filteredTasks().length }} tasks</span></div>
+  @if (store.loading() && store.tasks().length === 0) { <div class="loading-state" role="status"><span class="spinner"></span> Loading your tasks...</div> }
+  @else if (filteredTasks().length === 0) {
+    <div class="empty-state"><div class="empty-illustration">✓</div><h3>{{ store.tasks().length ? 'No tasks match your filters' : 'Nothing on your list yet' }}</h3><p>{{ store.tasks().length ? 'Try changing your search or filters.' : 'Create your first task to start making progress.' }}</p>@if (!store.tasks().length) { <a class="button primary" routerLink="/tasks/new">＋ Create a task</a> }</div>
+  } @else {
+    <div class="task-list">
+      @for (task of filteredTasks(); track task.id) {
+        <article class="task-row" [class.is-overdue]="store.isOverdue(task)">
+          <div class="task-check" [class.checked]="task.status === 'completed'">@if (task.status === 'completed') { ✓ }</div>
+          <div class="task-main"><div class="task-title-line"><h3 [class.strikethrough]="task.status === 'completed'">{{ task.title }}</h3>@if (store.isOverdue(task)) { <span class="overdue-tag">OVERDUE</span> }</div><p>{{ task.description || 'No description added' }}</p><div class="task-meta"><span class="status-pill" [class.todo-pill]="task.status === 'todo'" [class.progress-pill]="task.status === 'in-progress'" [class.completed-pill]="task.status === 'completed'"><i></i>{{ statusLabel(task.status) }}</span><span class="priority-pill" [class.high-priority]="task.priority === 'high'" [class.medium-priority]="task.priority === 'medium'" [class.low-priority]="task.priority === 'low'"><span>●</span>{{ task.priority }}</span><span class="due-date" [class.due-overdue]="store.isOverdue(task)">◷ {{ formatDate(task.dueDate) }}</span></div></div>
+          <div class="row-actions"><a [routerLink]="['/tasks', task.id, 'edit']" [attr.aria-label]="'Edit ' + task.title" title="Edit task">✎</a><button [attr.aria-label]="'Delete ' + task.title" title="Delete task" (click)="remove(task.id, task.title)">⌫</button></div>
+        </article>
+      }
+    </div>
+  }
+</section>
